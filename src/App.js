@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { graphql, usePreloadedQuery, useLazyLoadQuery } from 'react-relay';
 import { loadQuery, RelayEnvironmentProvider } from 'react-relay';
 import RelayEnv from './relay.js';
@@ -24,10 +24,12 @@ function ShowFilms(props) {
 export default function App(props) {
     return (
         <React.StrictMode>
-            <RelayEnvironmentProvider environment={RelayEnv}>
-                <p>All star wars films:</p>
-                <ShowFilms initialQueryRef={props.queryRefs[AppGetAllFilmsQuery.hash]} />
-            </RelayEnvironmentProvider>
+            <Suspense fallback={<span>loading...</span>}>
+                <RelayEnvironmentProvider environment={RelayEnv}>
+                    <p>All star wars films:</p>
+                    <ShowFilms initialQueryRef={props.queryRefs[AppGetAllFilmsQuery.hash]} />
+                </RelayEnvironmentProvider>
+            </Suspense>
         </React.StrictMode>
     );
 }

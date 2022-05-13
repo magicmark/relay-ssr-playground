@@ -1,6 +1,5 @@
 import 'regenerator-runtime/runtime.js';
 import { Writable } from 'stream';
-import { Suspense } from 'react';
 import * as ReactDOM from 'react-dom/server';
 import { loadQuery, RelayEnvironmentProvider } from 'react-relay';
 import App from './App';
@@ -17,7 +16,6 @@ class PromiseFromStream extends Writable {
     }
 
     _write(chunk, encoding, callback) {
-        console.log('chunk', chunk.toString());
         this._data += chunk.toString();
         callback();
     }
@@ -42,16 +40,11 @@ export default async function renderComponent() {
     };
 
     const renderStream = new PromiseFromStream();
-    const { pipe } = ReactDOM.renderToPipeableStream(
-        <Suspense fallback={<p>hi</p>}>
-            <App {...props} />
-        </Suspense>,
-        {
-            onAllReady() {
-                pipe(renderStream);
-            },
+    const { pipe } = ReactDOM.renderToPipeableStream(<App {...props} />, {
+        onAllReady() {
+            pipe(renderStream);
         },
-    );
+    });
 
     const markup = await renderStream;
 

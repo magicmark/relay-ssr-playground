@@ -37,14 +37,18 @@ async function fetchRelay(params, variables, _cacheConfig) {
     return json;
 }
 
-let records = {};
-if (typeof window !== 'undefined') {
-    records = JSON.parse(document.getElementById('relay-records').innerText);
+function getRecordSource() {
+    if (typeof window === 'undefined') {
+        return new RecordSource();
+    }
+
+    const records = JSON.parse(document.getElementById('relay-records').innerText);
+    return RecordSource.create(records);
 }
 
 export default new Environment({
     network: Network.create(fetchRelay),
-    store: new Store(new RecordSource(records), {
+    store: new Store(getRecordSource(), {
         // This property tells Relay to not immediately clear its cache when the user
         // navigates around the app. Relay will hold onto the specified number of
         // query results, allowing the user to return to recently visited pages
